@@ -3129,7 +3129,7 @@ public class UTF8StreamJsonParser
         if (arr == null) {
             return new int[more];
         }
-        return Arrays.copyOf(arr, arr.length + more);
+        return com.fasterxml.jackson.core.Arrays.copyOf(arr, arr.length + more);
     }
 
     /*

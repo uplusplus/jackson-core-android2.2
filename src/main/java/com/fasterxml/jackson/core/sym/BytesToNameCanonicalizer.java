@@ -25,7 +25,7 @@ public final class BytesToNameCanonicalizer
      * with unique (~= random) names.
      */
     protected static final int MAX_TABLE_SIZE = 0x10000; // 64k entries == 256k mem
-    
+
     /**
      * Let's only share reasonably sized symbol tables. Max size set to 3/4 of 16k;
      * this corresponds to 64k main hash index. This should allow for enough distinct
@@ -42,7 +42,7 @@ public final class BytesToNameCanonicalizer
      * Note: longest chain we have been able to produce without malicious
      * intent has been 60 (with "com.fasterxml.jackson.core.main.TestWithTonsaSymbols");
      * our setting should be reasonable here.
-     * 
+     *
      * @since 2.1
      */
     final static int MAX_COLL_CHAIN_LENGTH = 255;
@@ -51,7 +51,7 @@ public final class BytesToNameCanonicalizer
      * And to support reduce likelihood of accidental collisions causing
      * exceptions, let's prevent reuse of tables with long collision
      * overflow lists as well.
-     * 
+     *
      * @since 2.1
      */
     final static int MAX_COLL_CHAIN_FOR_REUSE  = 63;
@@ -72,7 +72,7 @@ public final class BytesToNameCanonicalizer
      * 'empty' status.
      */
     final static int LAST_VALID_BUCKET = 0xFE;
-    
+
     /*
     /**********************************************************
     /* Linkage, needed for merging symbol tables
@@ -92,18 +92,18 @@ public final class BytesToNameCanonicalizer
      * Child tables do NOT use the reference.
      */
     final protected AtomicReference<TableInfo> _tableInfo;
-    
+
     /**
      * Seed value we use as the base to make hash codes non-static between
      * different runs, but still stable for lifetime of a single symbol table
      * instance.
      * This is done for security reasons, to avoid potential DoS attack via
      * hash collisions.
-     * 
+     *
      * @since 2.1
      */
     final private int _hashSeed;
-    
+
     /*
     /**********************************************************
     /* Main table state
@@ -115,7 +115,7 @@ public final class BytesToNameCanonicalizer
      * to the table or not
      */
     protected final boolean _intern;
-    
+
     // // // First, global information
 
     /**
@@ -128,11 +128,11 @@ public final class BytesToNameCanonicalizer
      * We need to keep track of the longest collision list; this is needed
      * both to indicate problems with attacks and to allow flushing for
      * other cases.
-     * 
+     *
      * @since 2.1
      */
     protected int _longestCollisionList;
-    
+
     // // // Then information regarding primary hash array and its
     // // // matching Name array
 
@@ -230,7 +230,7 @@ public final class BytesToNameCanonicalizer
     /**
      * Constructor used for creating per-<code>JsonFactory</code> "root"
      * symbol tables: ones used for merging and sharing common symbols
-     * 
+     *
      * @param hashSize Initial hash area size
      * @param intern Whether Strings contained should be {@link String#intern}ed
      * @param seed Random seed valued used to make it more difficult to cause
@@ -303,13 +303,13 @@ public final class BytesToNameCanonicalizer
                 0 // longestCollisionList
         );
     }
-    
+
     /*
     /**********************************************************
     /* Life-cycle: factory methods, merging
     /**********************************************************
      */
-    
+
     /**
      * Factory method to call to create a symbol table instance with a
      * randomized seed value.
@@ -332,11 +332,11 @@ public final class BytesToNameCanonicalizer
     protected static BytesToNameCanonicalizer createRoot(int hashSeed) {
         return new BytesToNameCanonicalizer(DEFAULT_TABLE_SIZE, true, hashSeed);
     }
-    
+
     /**
      * Factory method used to create actual symbol table instance to
      * use for parsing.
-     * 
+     *
      * @param intern Whether canonical symbol Strings should be interned
      *   or not
      */
@@ -371,7 +371,7 @@ public final class BytesToNameCanonicalizer
     {
         final int childCount = childState.count;
         TableInfo currState = _tableInfo.get();
-        
+
         // Only makes sense if child actually has more entries
         if (childCount <= currState.count) {
             return;
@@ -414,7 +414,7 @@ public final class BytesToNameCanonicalizer
      * @since 2.1
      */
     public int bucketCount() { return _mainHash.length; }
-    
+
     /**
      * Method called to check to quickly see if a child symbol table
      * may have gotten additional entries. Used for checking to see
@@ -428,12 +428,12 @@ public final class BytesToNameCanonicalizer
      * @since 2.1
      */
     public int hashSeed() { return _hashSeed; }
-    
+
     /**
      * Method mostly needed by unit tests; calculates number of
      * entries that are in collision list. Value can be at most
      * ({@link #size} - 1), but should usually be much lower, ideally 0.
-     * 
+     *
      * @since 2.1
      */
     public int collisionCount() {
@@ -444,7 +444,7 @@ public final class BytesToNameCanonicalizer
      * Method mostly needed by unit tests; calculates length of the
      * longest collision chain. This should typically be a low number,
      * but may be up to {@link #size} - 1 in the pathological case
-     * 
+     *
      * @since 2.1
      */
     public int maxCollisionLength() {
@@ -456,7 +456,7 @@ public final class BytesToNameCanonicalizer
     /* Public API, accessing symbols:
     /**********************************************************
      */
-    
+
     public static Name getEmptyName()
     {
         return Name1.getEmptyName();
@@ -482,7 +482,7 @@ public final class BytesToNameCanonicalizer
         int hash = calcHash(firstQuad);
         int ix = (hash & _mainHashMask);
         int val = _mainHash[ix];
-        
+
         /* High 24 bits of the value are low 24 bits of hash (low 8 bits
          * are bucket index)... match?
          */
@@ -531,7 +531,7 @@ public final class BytesToNameCanonicalizer
         int hash = (secondQuad == 0) ? calcHash(firstQuad) : calcHash(firstQuad, secondQuad);
         int ix = (hash & _mainHashMask);
         int val = _mainHash[ix];
-        
+
         /* High 24 bits of the value are low 24 bits of hash (low 8 bits
          * are bucket index)... match?
          */
@@ -622,7 +622,7 @@ public final class BytesToNameCanonicalizer
         _addSymbol(hash, symbol);
         return symbol;
     }
-    
+
     public Name addName(String symbolStr, int[] quads, int qlen)
     {
         if (_intern) {
@@ -638,7 +638,7 @@ public final class BytesToNameCanonicalizer
         _addSymbol(hash, symbol);
         return symbol;
     }
-    
+
     /*
     /**********************************************************
     /* Helper methods
@@ -651,14 +651,14 @@ public final class BytesToNameCanonicalizer
      * and add bit of shifting. And other part is to make this
      * non-linear, at least for shorter symbols.
      */
-    
+
     // JDK uses 31; other fine choices are 33 and 65599, let's use 33
     // as it seems to give fewest collisions for us
     // (see [http://www.cse.yorku.ca/~oz/hash.html] for details)
     private final static int MULT = 33;
     private final static int MULT2 = 65599;
     private final static int MULT3 = 31;
-    
+
     public int calcHash(int firstQuad)
     {
         int hash = firstQuad ^ _hashSeed;
@@ -700,7 +700,7 @@ public final class BytesToNameCanonicalizer
         hash += (hash >>> 15);
         hash ^= quads[2];
         hash += (hash >>> 17);
-        
+
         for (int i = 3; i < qlen; ++i) {
             hash = (hash * MULT3) ^ quads[i];
             // for longer entries, mess a bit in-between too
@@ -834,7 +834,7 @@ public final class BytesToNameCanonicalizer
             } else {
                 --bucket; // 1-based index in value
             }
-            
+
             // And then just need to link the new bucket entry in
             Bucket newB = new Bucket(symbol, _collList[bucket]);
             _collList[bucket] = newB;
@@ -866,7 +866,7 @@ public final class BytesToNameCanonicalizer
 
     private void rehash()
     {
-        _needRehash = false;        
+        _needRehash = false;
         // Note: since we'll make copies, no need to unshare, can just mark as such:
         _mainNamesShared = false;
 
@@ -885,7 +885,7 @@ public final class BytesToNameCanonicalizer
             nukeSymbols();
             return;
         }
-        
+
         _mainHash = new int[newLen];
         _mainHashMask = (newLen - 1);
         Name[] oldNames = _mainNames;
@@ -917,7 +917,7 @@ public final class BytesToNameCanonicalizer
         _collListShared = false;
 
         int maxColl = 0;
-        
+
         Bucket[] oldBuckets = _collList;
         _collList = new Bucket[oldBuckets.length];
         for (int i = 0; i < oldEnd; ++i) {
@@ -958,7 +958,7 @@ public final class BytesToNameCanonicalizer
         } // for (... list of bucket heads ... )
 
         _longestCollisionList = maxColl;
-        
+
         if (symbolsSeen != _count) { // sanity check
             throw new RuntimeException("Internal error: count after rehash "+symbolsSeen+"; should be "+_count);
         }
@@ -978,7 +978,7 @@ public final class BytesToNameCanonicalizer
         _collCount = 0;
         _collEnd = 0;
     }
-    
+
     /**
      * Method called to find the best bucket to spill a Name over to:
      * usually the first bucket that has only one entry, but in general
@@ -1012,7 +1012,7 @@ public final class BytesToNameCanonicalizer
     private void unshareMain()
     {
         final int[] old = _mainHash;
-        _mainHash = Arrays.copyOf(old, old.length);
+        _mainHash = com.fasterxml.jackson.core.Arrays.copyOf(old, old.length);
         _mainHashShared = false;
     }
 
@@ -1022,7 +1022,7 @@ public final class BytesToNameCanonicalizer
         if (old == null) {
             _collList = new Bucket[INITIAL_COLLISION_LEN];
         } else {
-            _collList = Arrays.copyOf(old, old.length);
+            _collList = com.fasterxml.jackson.core.Arrays.copyOf(old, old.length);
         }
         _collListShared = false;
     }
@@ -1030,14 +1030,14 @@ public final class BytesToNameCanonicalizer
     private void unshareNames()
     {
         final Name[] old = _mainNames;
-        _mainNames = Arrays.copyOf(old, old.length);
+        _mainNames = com.fasterxml.jackson.core.Arrays.copyOf(old, old.length);
         _mainNamesShared = false;
     }
 
     private void expandCollision()
     {
         final Bucket[] old = _collList;
-        _collList = Arrays.copyOf(old, old.length * 2);
+        _collList = com.fasterxml.jackson.core.Arrays.copyOf(old, old.length * 2);
     }
 
     /*
@@ -1047,7 +1047,7 @@ public final class BytesToNameCanonicalizer
      */
 
     private static Name constructName(int hash, String name, int q1, int q2)
-    {     
+    {
         if (q2 == 0) { // one quad only?
             return new Name1(name, hash, q1);
         }
@@ -1080,7 +1080,7 @@ public final class BytesToNameCanonicalizer
     /* Other helper methods
     /**********************************************************
      */
-    
+
     /**
      * @since 2.1
      */
@@ -1089,7 +1089,7 @@ public final class BytesToNameCanonicalizer
         throw new IllegalStateException("Longest collision chain in symbol table (of size "+_count
                 +") now exceeds maximum, "+maxLen+" -- suspect a DoS attack based on hash collisions");
     }
-    
+
     /*
     /**********************************************************
     /* Helper classes
@@ -1100,7 +1100,7 @@ public final class BytesToNameCanonicalizer
      * Immutable value class used for sharing information as efficiently
      * as possible, by only require synchronization of reference manipulation
      * but not access to contents.
-     * 
+     *
      * @since 2.1
      */
     private final static class TableInfo
@@ -1138,11 +1138,11 @@ public final class BytesToNameCanonicalizer
             collEnd = src._collEnd;
             longestCollisionList = src._longestCollisionList;
         }
-    
+
     }
-    
+
     /**
-     * 
+     *
      */
     final static class Bucket
     {

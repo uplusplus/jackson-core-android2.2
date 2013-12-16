@@ -601,7 +601,7 @@ public final class TextBuffer
         // Must grow by at least 1 char, no matter what
         int newLen = (len == MAX_SEGMENT_LEN) ?
             (MAX_SEGMENT_LEN + 1) : Math.min(MAX_SEGMENT_LEN, len + (len >> 1));
-        return (_currentSegment = Arrays.copyOf(curr, newLen));
+        return (_currentSegment = com.fasterxml.jackson.core.Arrays.copyOf(curr, newLen));
     }
 
     /*
@@ -688,7 +688,7 @@ public final class TextBuffer
             }
             final int start = _inputStart;
             if (start == 0) {
-                return Arrays.copyOf(_inputBuffer, len);
+                return com.fasterxml.jackson.core.Arrays.copyOf(_inputBuffer, len);
             }
             return Arrays.copyOfRange(_inputBuffer, start, start+len);
         }

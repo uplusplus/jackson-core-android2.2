@@ -576,9 +576,9 @@ public final class CharsToNameCanonicalizer
     private void copyArrays()
     {
         final String[] oldSyms = _symbols;
-        _symbols = Arrays.copyOf(oldSyms, oldSyms.length);
+        _symbols = com.fasterxml.jackson.core.Arrays.copyOf(oldSyms, oldSyms.length);
         final Bucket[] oldBuckets = _buckets;
-        _buckets = Arrays.copyOf(oldBuckets, oldBuckets.length);
+        _buckets = com.fasterxml.jackson.core.Arrays.copyOf(oldBuckets, oldBuckets.length);
     }
 
     /**
